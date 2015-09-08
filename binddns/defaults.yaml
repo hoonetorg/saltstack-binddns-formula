@@ -69,8 +69,8 @@ RedHat:
     localzones:
       path: /etc/named.rfc1912.zones
     options:
-      path: /etc/named.conf.options
+      path: /etc/named/options.conf
     zoneconfigs:
-      path: /etc/named.conf.local
+      path: /etc/named/zones.conf
     zones: {}
 {% endload %}
