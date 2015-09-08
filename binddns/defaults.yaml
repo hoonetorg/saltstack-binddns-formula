@@ -41,7 +41,7 @@ RedHat:
   group:
     name: named
   vardir: /var/named
-  zonedir: /var/named/data
+  zonedir: /var/named
   config:
     manage:
       - named_conf
