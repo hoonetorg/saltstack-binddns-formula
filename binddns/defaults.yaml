@@ -53,7 +53,7 @@ RedHat:
       logging_channels:
         - channel: simple_log
           desttype: file
-          path: /var/log/named.log
+          path: data/named.run
           versions: 3
           size: 5m
           severity: info
