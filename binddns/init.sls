@@ -145,6 +145,8 @@ zone_{{ z.name }}:
         expire: {{ z.expire|default(z_def.expire) }}
         minimum: {{ z.minimum|default(z_def.minimum) }}
         contact: {{ z.contact|default('root.' ~ z.name ~ '.') }}
+        nameservers: {{z.nameservers|default([z.soa])}}
+        mailservers: {{z.mailservers|default({})}}
         records: {{ z.records|default([]) }}
         includes: {{ include_list }}
   {% endif %}
@@ -173,6 +175,8 @@ incl_{{ z.name }}:
         expire: {{ z.expire|default(z_def.expire) }}
         minimum: {{ z.minimum|default(z_def.minimum) }}
         contact: {{ z.contact|default('root.' ~ z.name ~ '.') }}
+        nameservers: {{z.nameservers|default([z.soa])}}
+        mailservers: {{z.mailservers|default({})}}
         records: {{ z.records|default([]) }}
         auto_delegate_from_mine: {{ z.auto_delegate_from_mine|default([]) }}
         auto_delegate_from_grains: {{ z.auto_delegate_from_grains|default([]) }}
