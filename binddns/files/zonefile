@@ -7,18 +7,18 @@ $TTL {{ ttl }}
   {{ expire }}  ; expire
   {{ minimum }}  ; minimum
 )
-{% if nameservers is defined -%}
+{% if nameservers is defined and nameservers is iterable -%}
 {%- for n in nameservers %}
    IN NS {{n}}.
 {%- endfor %}
 {%- endif %}
-{% if mailservers is defined -%}
+{% if mailservers is defined and mailservers is mapping -%}
 {%- for m, m_d in mailservers.items() %}
    IN MX {{m_d.prio}} {{m}}.
 {%- endfor %}
 {%- endif %}
 
-{% if records is defined -%}
+{% if records is defined and records is iterable -%}
 {%- for r in records -%}
   {%- if r.comment is not defined -%}
     {%- set rcomment = ' ' -%}
@@ -34,7 +34,7 @@ $TTL {{ ttl }}
 {% endfor %}
 {% endif %}
 
-{% if includes is defined -%}
+{% if includes is defined and records is iterable -%}
 {%- for i in includes -%}
   {%- if i.domain is not defined -%}
     {%- set idomain = '' -%}

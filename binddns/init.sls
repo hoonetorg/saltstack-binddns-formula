@@ -145,10 +145,10 @@ zone_{{ z.name }}:
         expire: {{ z.expire|default(z_def.expire) }}
         minimum: {{ z.minimum|default(z_def.minimum) }}
         contact: {{ z.contact|default('root.' ~ z.name ~ '.') }}
-        nameservers: {{z.nameservers|default([z.soa])}}
-        mailservers: {{z.mailservers|default({})}}
-        records: {{ z.records|default([]) }}
-        includes: {{ include_list }}
+        nameservers: {{z.nameservers|json|default([z.soa])}}
+        mailservers: {{z.mailservers|json|default({})}}
+        records: {{ z.records|json|default([]) }}
+        includes: {{ include_list|json }}
   {% endif %}
 {% endfor %}
 
@@ -175,10 +175,10 @@ incl_{{ z.name }}:
         expire: {{ z.expire|default(z_def.expire) }}
         minimum: {{ z.minimum|default(z_def.minimum) }}
         contact: {{ z.contact|default('root.' ~ z.name ~ '.') }}
-        nameservers: {{z.nameservers|default([z.soa])}}
-        mailservers: {{z.mailservers|default({})}}
-        records: {{ z.records|default([]) }}
-        auto_delegate_from_mine: {{ z.auto_delegate_from_mine|default([]) }}
-        auto_delegate_from_grains: {{ z.auto_delegate_from_grains|default([]) }}
+        nameservers: {{z.nameservers|json|default([z.soa])}}
+        mailservers: {{z.mailservers|json|default({})}}
+        records: {{ z.records|json|default([]) }}
+        auto_delegate_from_mine: {{ z.auto_delegate_from_mine|json|default([]) }}
+        auto_delegate_from_grains: {{ z.auto_delegate_from_grains|json|default([]) }}
   {% endif %}
 {% endfor %}
