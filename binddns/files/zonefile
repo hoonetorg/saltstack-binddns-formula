@@ -1,0 +1,47 @@
+$ORIGIN {{ name }}.
+$TTL {{ ttl }}
+@ IN SOA {{ soa }}. {{ contact }} (
+  {{ serial }}  ; serial
+  {{ refresh }} ; refresh
+  {{ retry }}  ; retry
+  {{ expire }}  ; expire
+  {{ minimum }}  ; minimum
+)
+{% if nameservers is defined and nameservers is iterable -%}
+{%- for n in nameservers %}
+   IN NS {{n}}.
+{%- endfor %}
+{%- endif %}
+{% if mailservers is defined and mailservers is mapping -%}
+{%- for m, m_d in mailservers.items() %}
+   IN MX {{m_d.prio}} {{m}}.
+{%- endfor %}
+{%- endif %}
+
+{% if records is defined and records is iterable -%}
+{%- for r in records -%}
+  {%- if r.comment is not defined -%}
+    {%- set rcomment = ' ' -%}
+  {%- else -%}
+    {%- set rcomment = ' ; ' ~ r.comment -%}
+  {%- endif -%}
+  {%- if r.ttl is not defined -%}
+    {%- set rttl = ' ' -%}
+  {%- else -%}
+    {%- set rttl = ' ' ~ r.ttl ~ ' ' -%}
+  {%- endif -%}
+{{ r.owner }} {{- rttl -}} IN {{ r.class|upper }} {{ r.data }} {{- rcomment }}
+{% endfor %}
+{% endif %}
+
+{% if includes is defined and records is iterable -%}
+{%- for i in includes -%}
+  {%- if i.domain is not defined -%}
+    {%- set idomain = '' -%}
+  {%- else -%}
+    {%- set idomain = i.domain -%}
+  {%- endif -%}
+$INCLUDE {{ i.path }} {{ idomain }};
+{% endfor %}
+{% endif %}
+

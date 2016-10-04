@@ -89,7 +89,7 @@ options:
 
 {%
 set z_def = {
-  'ttl': 10800,
+  'ttl': 300,
   'serial': 1,
   'refresh': 86400,
   'retry': 3600,
@@ -114,6 +114,16 @@ zoneconfigs:
 
 {% for z in salt['pillar.get']('binddns:zones', []) %}
   {% if not (z.create_db_only and salt['file.file_exists'](datamap.zonedir ~ '/db.' ~ z.name)) %}
+    {% set include_list = [] %}
+    {% if (z.zone_recs_from_mine is defined and z.zone_recs_from_mine) or
+          (z.auto_delegate_from_mine is defined and z.auto_delegate_from_mine) %}
+        {% do include_list.append( { 'path': datamap.zonedir + "/in." + z.name } ) %}
+    {% endif %}
+    {% if z.includes is defined and z.includes %}
+      {% for include_dict in z.includes %}
+        {% do include_list.append( include_dict ) %}
+      {% endfor %}
+    {% endif %}
 zone_{{ z.name }}:
   file:
     - managed
@@ -135,6 +145,40 @@ zone_{{ z.name }}:
         expire: {{ z.expire|default(z_def.expire) }}
         minimum: {{ z.minimum|default(z_def.minimum) }}
         contact: {{ z.contact|default('root.' ~ z.name ~ '.') }}
-        records: {{ z.records|default([]) }}
+        nameservers: {{z.nameservers|json|default([z.soa])}}
+        mailservers: {{z.mailservers|json|default({})}}
+        records: {{ z.records|json|default([]) }}
+        includes: {{ include_list|json }}
+  {% endif %}
+{% endfor %}
+
+{% for z in salt['pillar.get']('binddns:zones', []) %}
+  {% if z.zone_recs_from_mine is defined or z.auto_delegate_from_mine is defined or z.auto_delegate_from_grains is defined %}
+incl_{{ z.name }}:
+  file:
+    - managed
+    - name: {{ datamap.zonedir }}/in.{{ z.name }}
+    - source: {{ datamap.config.zones.template_path|default('salt://binddns/files/zone_recs_from_salt') }}
+    - template: {{ datamap.config.zones.template_renderer|default('jinja') }}
+    - mode: {{ datamap.config.zones.mode|default('644') }}
+    - user: {{ datamap.config.zones.user|default('root') }}
+    - group: {{ datamap.config.zones.group|default('root') }}
+    - watch_in:
+      - service: binddns
+    - context:
+        name: {{ z.name }}
+        soa: {{ z.soa }}
+        ttl: {{ z.ttl|default(z_def.ttl) }}
+        serial: {{ z.serial|default(z_def.serial) }}
+        refresh: {{ z.refresh|default(z_def.refresh) }}
+        retry: {{ z.retry|default(z_def.retry) }}
+        expire: {{ z.expire|default(z_def.expire) }}
+        minimum: {{ z.minimum|default(z_def.minimum) }}
+        contact: {{ z.contact|default('root.' ~ z.name ~ '.') }}
+        nameservers: {{z.nameservers|json|default([z.soa])}}
+        mailservers: {{z.mailservers|json|default({})}}
+        records: {{ z.records|json|default([]) }}
+        auto_delegate_from_mine: {{ z.auto_delegate_from_mine|json|default([]) }}
+        auto_delegate_from_grains: {{ z.auto_delegate_from_grains|json|default([]) }}
   {% endif %}
 {% endfor %}
