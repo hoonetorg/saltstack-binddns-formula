@@ -61,6 +61,7 @@ rndc_key:
   file:
     - managed
     - name: {{ datamap.config.rndc_key.path }}
+    - replace: False
     - mode: {{ datamap.config.rndc_key.mode|default('640') }}
     - user: {{ datamap.config.rndc_key.user|default('root') }}
     - group: {{ datamap.config.rndc_key.group|default(datamap.group.name) }}
