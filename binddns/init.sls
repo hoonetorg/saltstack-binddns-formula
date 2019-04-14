@@ -19,7 +19,7 @@ zonedir:
   file:
     - directory
     - name: {{ datamap.zonedir }}
-    - mode: 750
+    - mode: '1770'
     - user: {{ datamap.user.name }}
     - group: {{ datamap.group.name }}
 
