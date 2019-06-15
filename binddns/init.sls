@@ -6,7 +6,7 @@
 binddns:
   pkg:
     - installed
-    - pkgs: {{ datamap.pkgs }}
+    - pkgs: {{ datamap.pkgs | tojson }}
   service:
     - running
     - name: {{ datamap.service.name }}
